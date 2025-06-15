@@ -1,7 +1,6 @@
 import { INestApplication } from "@nestjs/common";
 import { Test } from "@nestjs/testing";
 import request from "supertest";
-import { describe, it, expect, afterAll } from "vitest";
 import { NotesModule } from "./notes.module";
 
 describe('Notes Integration', () => {
