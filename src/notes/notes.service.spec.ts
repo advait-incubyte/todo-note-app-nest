@@ -14,21 +14,10 @@ describe('Notes Service', () => {
 
   beforeEach(async () => {
     mockedNotesRepo = mock<NotesRepository>();
-
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        NotesService,
-        {
-          provide: 'NotesRepository',
-          useValue: mockedNotesRepo,
-        }
-      ],
-    }).compile();
-
-    service = module.get<NotesService>(NotesService);
+    service = new NotesService(mockedNotesRepo);
   });
 
-  afterAll(() => {
+  afterEach(() => {
     mockReset(mockedNotesRepo);
   })
 
@@ -36,14 +25,14 @@ describe('Notes Service', () => {
     expect(service).toBeDefined();
   });
 
-  it('should create a new note', () => {
+  it('should create a new note', async () => {
     const dto: CreateNoteDto = {
       title: 'New Note',
       content: 'Contents of the new note'
     }
 
     mockedNotesRepo.createNote.mockResolvedValue(dto);
-    const response = service.createNote(dto);
+    const response = await service.createNote(dto);
     expect(response).toEqual(dto)
   })
 });
