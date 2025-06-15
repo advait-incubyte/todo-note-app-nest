@@ -1,4 +1,5 @@
-import { Post, Controller, HttpCode, HttpStatus } from '@nestjs/common';
+import { Post, Controller, HttpCode, HttpStatus, Body } from '@nestjs/common';
+import { CreateNoteDto } from './dto/create-note.dto';
 
 @Controller('notes')
 export class NotesController {
@@ -6,7 +7,7 @@ export class NotesController {
 
     @Post()
     @HttpCode(HttpStatus.CREATED)
-    createNote() {
+    createNote(@Body() createNoteDto: CreateNoteDto) {
         return 'created';
     }
 }
