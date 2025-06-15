@@ -1,5 +1,6 @@
 import { Post, Controller, HttpCode, HttpStatus, Body } from '@nestjs/common';
 import { CreateNoteDto } from './dto/create-note.dto';
+import { NotesService } from './notes.service';
 
 @Controller('notes')
 export class NotesController {
@@ -8,6 +9,6 @@ export class NotesController {
     @Post()
     @HttpCode(HttpStatus.CREATED)
     createNote(@Body() createNoteDto: CreateNoteDto) {
-        return 'created';
+        return this.notesService.createNote(createNoteDto);
     }
 }
