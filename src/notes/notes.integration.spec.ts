@@ -1,5 +1,6 @@
 import { INestApplication } from "@nestjs/common";
 import { Test } from "@nestjs/testing";
+import * as request from 'supertest';
 import { describe, it, expect, afterAll } from "vitest";
 import { NotesModule } from "./notes.module";
 
@@ -21,5 +22,17 @@ describe('Notes Integration', () => {
 
     it('should be defined', () => {
         expect(app).toBeDefined();
+    })
+
+    it('POST /notes should create a new note and return 201', async () => {
+        const response = await request(app.getHttpServer())
+            .post('/notes')
+            .send({
+                title: 'Test Note',
+                content: 'This is a test note'
+            })
+            .expect(201);
+
+        expect(response.body).toHaveProperty('id');
     })
 })
