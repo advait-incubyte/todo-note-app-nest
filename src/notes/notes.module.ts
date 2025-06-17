@@ -1,20 +1,11 @@
 import { Module } from '@nestjs/common';
+
 import { NotesController } from './notes.controller';
 import { NotesService } from './notes.service';
-import { CreateNoteDto } from './dto/create-note.dto';
-
-const MockNotesRepository = {
-  provide: 'NotesRepository',
-  useValue: {
-    createNote: (createNoteDto: CreateNoteDto) => Promise<CreateNoteDto>
-  }
-}
+import { NotesRepository } from './notes.repository';
 
 @Module({
   controllers: [NotesController],
-  providers: [
-    NotesService,
-    MockNotesRepository
-  ]
+  providers: [NotesService, NotesRepository]
 })
 export class NotesModule {}

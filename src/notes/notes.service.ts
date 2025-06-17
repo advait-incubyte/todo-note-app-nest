@@ -1,15 +1,10 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { CreateNoteDto } from './dto/create-note.dto';
-
-interface NotesRepository {
-    createNote: (createNoteDto: CreateNoteDto) => Promise<CreateNoteDto>;
-}
+import { NotesRepository } from './notes.repository';
 
 @Injectable()
 export class NotesService {
-    constructor(@Inject('NotesRepository') private readonly notesRepository: NotesRepository) {
-        console.log('Injected notesRepository:', this.notesRepository);
-    }
+    constructor(@Inject(NotesRepository) private readonly notesRepository: NotesRepository) {}
 
     async createNote(data: CreateNoteDto): Promise<CreateNoteDto> {
         return this.notesRepository.createNote(data);

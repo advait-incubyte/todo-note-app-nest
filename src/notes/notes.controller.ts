@@ -4,9 +4,7 @@ import { NotesService } from './notes.service';
 
 @Controller('notes')
 export class NotesController {
-    constructor(@Inject('NotesService') private readonly notesService: NotesService) {
-        console.log('NotesController created. Injected notesService:', this.notesService);
-    }
+    constructor(@Inject(NotesService) private readonly notesService: NotesService) {}
 
     @Post()
     @HttpCode(HttpStatus.CREATED)

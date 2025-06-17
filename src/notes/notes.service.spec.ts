@@ -1,12 +1,8 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { mock, MockProxy, mockReset } from 'vitest-mock-extended';
 
 import { NotesService } from './notes.service';
 import { CreateNoteDto } from './dto/create-note.dto';
-
-interface NotesRepository {
-  createNote: (createNoteDto: CreateNoteDto) => Promise<CreateNoteDto>;
-}
+import { NotesRepository } from './notes.repository';
 
 describe('Notes Service', () => {
   let service: NotesService;
