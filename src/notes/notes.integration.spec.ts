@@ -25,12 +25,22 @@ describe('Notes Integration', () => {
     })
 
     it('POST /notes should create a new note and return 201', async () => {
+        const note = {
+            title: 'Test Note',
+            content: 'This is a test note'
+        }
+
         const response = await request(app.getHttpServer())
             .post('/notes')
-            .send({
-                title: 'Test Note',
-                content: 'This is a test note'
-            })
-            .expect(201);
+            .send(note)
+            .expect(201)
+            .expect(note);
+
+        const { id } = response.body;
+
+        const getResponse = await request(app.getHttpServer())
+            .get(`/notes/${id}`)
+            .expect(200)
+            .expect(note);
     })
 })
