@@ -53,16 +53,16 @@ describe('Notes Integration', () => {
         expect(response.body).toMatchObject<CreateNoteDto>(note);
 
         // check persistence
-        // const { id } = response.body;
-        // const getResponse = await request(app.getHttpServer())
-        //     .get(`/notes/${id}`)
-        //     .expect(200)
+        const { id } = response.body;
+        const getResponse = await request(app.getHttpServer())
+            .get(`/notes/${id}`)
+            .expect(200)
 
-        // expect(getResponse.body).toMatchObject<CreateNoteDto>(note);
+        expect(getResponse.body).toMatchObject<CreateNoteDto>(note);
 
-        // // remove test data
-        // await request(app.getHttpServer())
-        //     .delete(`/notes/${id}`)
-        //     .expect(204)
+        // remove test data
+        await request(app.getHttpServer())
+            .delete(`/notes/${id}`)
+            .expect(204)
     })
 })
