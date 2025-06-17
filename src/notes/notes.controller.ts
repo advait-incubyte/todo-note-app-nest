@@ -1,10 +1,12 @@
-import { Post, Controller, HttpCode, HttpStatus, Body } from '@nestjs/common';
+import { Post, Controller, HttpCode, HttpStatus, Body, Inject } from '@nestjs/common';
 import { CreateNoteDto } from './dto/create-note.dto';
 import { NotesService } from './notes.service';
 
 @Controller('notes')
 export class NotesController {
-    constructor(private readonly notesService: NotesService) {}
+    constructor(@Inject('NotesService') private readonly notesService: NotesService) {
+        console.log('NotesController created. Injected notesService:', this.notesService);
+    }
 
     @Post()
     @HttpCode(HttpStatus.CREATED)

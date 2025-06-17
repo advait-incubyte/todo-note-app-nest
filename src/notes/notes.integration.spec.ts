@@ -2,14 +2,29 @@ import { INestApplication } from "@nestjs/common";
 import { Test } from "@nestjs/testing";
 import request from "supertest";
 import { NotesModule } from "./notes.module";
+import { CreateNoteDto } from "./dto/create-note.dto";
+import { NotesController } from "./notes.controller";
+import { NotesService } from "./notes.service";
 
 describe('Notes Integration', () => {
     let app: INestApplication;
 
     beforeAll(async () => {
         const module = await Test.createTestingModule({
-            imports: [NotesModule],
-        }).compile()
+            controllers: [NotesController],
+            providers: [
+                {
+                    provide: 'NotesService',
+                    useClass: NotesService
+                },
+                {
+                    provide: 'NotesRepository',
+                    useValue: {
+                        createNote: (createNoteDto: CreateNoteDto) => Promise<CreateNoteDto>,
+                    },
+                },
+            ],
+        }).compile();
 
         app = module.createNestApplication();
         await app.init();
