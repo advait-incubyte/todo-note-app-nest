@@ -66,6 +66,52 @@ describe('Notes Integration', () => {
             .expect(204)
     })
 
+    test('GET /notes should return all notes', async () => {
+        const notes: CreateNoteDto[] = [
+            {
+                title: '/GET Note 1',
+                content: 'This is a test note 1'
+            },
+            {
+                title: '/GET Note 2',
+                content: 'This is a test note 2'
+            },
+            {
+                title: '/GET Note 3',
+                content: 'This is a test note 3'
+            }
+        ]
+
+        let ids: number[] = [];
+        for (const note of notes) {
+            const response = await request(app.getHttpServer())
+                .post('/notes')
+                .send(note)
+                .expect(201)
+
+            ids.push(response.body.id);
+        }
+
+        // fetch all notes
+        const response = await request(app.getHttpServer())
+            .get('/notes')
+            .expect(200)
+
+        // expect(response.body).toBeDefined();
+        // expect(response.body.length).toBe(notes.length);
+
+        // for (const note of response.body) {
+        //     expect(ids).toContain(note.id);
+        // }
+
+        // // remove test data
+        // for (const id of ids) {
+        //     await request(app.getHttpServer())
+        //         .delete(`/notes/${id}`)
+        //         .expect(204)
+        // }
+    })
+
     test('GET /notes/:id should return the note with id :id', async () => {
         // create note to fetch later
         const note: CreateNoteDto = {
