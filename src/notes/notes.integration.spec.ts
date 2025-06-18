@@ -116,6 +116,10 @@ describe('Notes Integration', () => {
             .get(`/notes/${id}`)
             .expect(404)
 
-        expect(getResponse.body).toBeNull();
+        expect(getResponse.body).toMatchObject({
+            error: 'Not Found',
+            message: `Note with id ${id} not found`,
+            statusCode: 404
+        });
     })
 })
