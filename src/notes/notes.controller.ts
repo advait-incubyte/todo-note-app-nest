@@ -1,4 +1,4 @@
-import { Post, Controller, HttpCode, HttpStatus, Body, Inject } from '@nestjs/common';
+import { Controller, HttpCode, HttpStatus, Inject, Body, Param, Post, Get } from '@nestjs/common';
 import { CreateNoteDto } from './dto/create-note.dto';
 import { NotesService } from './notes.service';
 
@@ -10,5 +10,10 @@ export class NotesController {
     @HttpCode(HttpStatus.CREATED)
     createNote(@Body() createNoteDto: CreateNoteDto) {
         return this.notesService.createNote(createNoteDto);
+    }
+
+    @Get(':id')
+    getNote(@Param('id') id: string) {
+        return { id, title: 'Test Note', content: 'This is a test note' }
     }
 }
