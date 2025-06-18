@@ -112,10 +112,10 @@ describe('Notes Integration', () => {
             .expect(204)
 
         // assert note is deleted
-        // const getResponse = await request(app.getHttpServer())
-        //     .get(`/notes/${id}`)
-        //     .expect(404)
+        const getResponse = await request(app.getHttpServer())
+            .get(`/notes/${id}`)
+            .expect(404)
 
-        // expect(getResponse.body).toBeNull();
+        expect(getResponse.body).toBeNull();
     })
 })
