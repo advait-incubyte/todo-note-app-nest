@@ -17,6 +17,11 @@ export class NotesController {
         return this.notesService.getNote(id);
     }
 
+    @Get()
+    getNotes() {
+        return [];
+    }
+
     @Delete(':id')
     @HttpCode(HttpStatus.NO_CONTENT)
     deleteNote(@Param('id') id: number) {
