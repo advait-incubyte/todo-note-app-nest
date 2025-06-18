@@ -13,7 +13,7 @@ export class NotesController {
     }
 
     @Get(':id')
-    getNote(@Param('id') id: string) {
-        return { id, title: 'Test Note', content: 'This is a test note' }
+    getNote(@Param('id') id: number) {
+        return this.notesService.getNote(id);
     }
 }

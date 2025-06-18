@@ -3,8 +3,11 @@ import { CreateNoteDto } from "./dto/create-note.dto";
 import * as schema from "./schema";
 import { DATABASE_CONNECTION } from "../drizzle/constants";
 import { NodePgDatabase } from "drizzle-orm/node-postgres";
+import { eq } from "drizzle-orm";
 
 export const NOTES_REPOSITORY = 'NotesRepository';
+
+const { notes } = schema;
 
 @Injectable()
 export class NotesRepository {
@@ -12,9 +15,18 @@ export class NotesRepository {
 
     async createNote(createNoteDto: CreateNoteDto) {
         const [note] = await this.db
-            .insert(schema.notes)
+            .insert(notes)
             .values(createNoteDto)
             .returning();
+
+        return note;
+    }
+
+    async getNote(id: number) {
+        const [note] = await this.db
+            .select()
+            .from(notes)
+            .where(eq(notes.id, id));
 
         return note;
     }
