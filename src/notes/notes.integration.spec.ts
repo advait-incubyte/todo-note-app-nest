@@ -97,19 +97,19 @@ describe('Notes Integration', () => {
             .get('/notes')
             .expect(200)
 
-        // expect(response.body).toBeDefined();
-        // expect(response.body.length).toBe(notes.length);
+        expect(response.body).toBeDefined();
+        expect(response.body.length).toBe(notes.length);
 
-        // for (const note of response.body) {
-        //     expect(ids).toContain(note.id);
-        // }
+        for (const note of response.body) {
+            expect(ids).toContain(note.id);
+        }
 
-        // // remove test data
-        // for (const id of ids) {
-        //     await request(app.getHttpServer())
-        //         .delete(`/notes/${id}`)
-        //         .expect(204)
-        // }
+        // remove test data
+        for (const id of ids) {
+            await request(app.getHttpServer())
+                .delete(`/notes/${id}`)
+                .expect(204)
+        }
     })
 
     test('GET /notes/:id should return the note with id :id', async () => {

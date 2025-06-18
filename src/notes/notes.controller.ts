@@ -19,7 +19,7 @@ export class NotesController {
 
     @Get()
     getNotes() {
-        return [];
+        return this.notesService.getNotes();
     }
 
     @Delete(':id')
