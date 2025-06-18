@@ -13,6 +13,10 @@ export class NotesService {
         return this.notesRepository.createNote(data);
     }
 
+    async getNotes(): Promise<Note[]> {
+        return this.notesRepository.getNotes();
+    }
+
     async getNote(id: number): Promise<Note> {
         const note = await this.notesRepository.getNote(id);
 

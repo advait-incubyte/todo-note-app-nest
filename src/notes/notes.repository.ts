@@ -22,6 +22,12 @@ export class NotesRepository {
         return note;
     }
 
+    async getNotes() {
+        return this.db
+            .select()
+            .from(notes);
+    }
+
     async getNote(id: number) {
         const [note] = await this.db
             .select()

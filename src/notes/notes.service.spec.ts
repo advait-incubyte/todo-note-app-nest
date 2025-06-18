@@ -41,6 +41,36 @@ describe('Notes Service', () => {
     expect(response).toMatchObject(dto)
   })
 
+  it('should get all notes', async () => {
+    const mockResponseValue: Note[] = [
+      {
+        id: 1,
+        title: 'Note 1',
+        content: 'Contents of note 1',
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        id: 2,
+        title: 'Note 2',
+        content: 'Contents of note 2',
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        id: 3,
+        title: 'Note 3',
+        content: 'Contents of note 3',
+        createdAt: new Date(),
+        updatedAt: new Date()
+      }
+    ]
+    mockedNotesRepo.getNotes.mockResolvedValue(mockResponseValue);
+    
+    const response = await service.getNotes();
+    expect(response).toEqual(expect.arrayContaining(mockResponseValue));
+  })
+
   it('should get a note by id', async () => {
     const mockResponseValue = {
       id: 1,
