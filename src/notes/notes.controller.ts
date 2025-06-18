@@ -20,6 +20,6 @@ export class NotesController {
     @Delete(':id')
     @HttpCode(HttpStatus.NO_CONTENT)
     deleteNote(@Param('id') id: number) {
-        return 'deleted';
+        return this.notesService.deleteNote(id);
     }
 }
