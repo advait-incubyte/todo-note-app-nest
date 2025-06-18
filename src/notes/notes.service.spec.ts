@@ -36,4 +36,27 @@ describe('Notes Service', () => {
     const response = await service.createNote(dto);
     expect(response).toMatchObject(dto)
   })
+
+  it('should get a note by id', async () => {
+    const mockResponseValue = {
+      id: 1,
+      title: 'New Note',
+      content: 'Contents of the new note',
+      createdAt: new Date(),
+      updatedAt: new Date()
+    }
+    mockedNotesRepo.getNote.mockResolvedValue(mockResponseValue);
+
+    const response = await service.getNote(1);
+
+    expect(response.id).toBe(1);
+    expect(response).toMatchObject({
+      id: mockResponseValue.id,
+      title: mockResponseValue.title,
+      content: mockResponseValue.content,
+      createdAt: mockResponseValue.createdAt,
+      updatedAt: mockResponseValue.updatedAt
+    })
+    expect(mockedNotesRepo.getNote).toHaveBeenCalledWith(1);
+  })
 });
