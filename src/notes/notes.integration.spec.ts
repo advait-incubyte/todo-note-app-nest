@@ -38,7 +38,7 @@ describe('Notes Integration', () => {
         expect(app).toBeDefined();
     })
 
-    it('POST /notes should create a new note and return 201', async () => {
+    test('POST /notes should create a new note and return 201', async () => {
         const note: CreateNoteDto = {
             title: 'Test Note Created',
             content: 'This is a test note created by integration test'
@@ -66,7 +66,7 @@ describe('Notes Integration', () => {
             .expect(204)
     })
 
-    it('GET /notes/:id should return the note with id :id', async () => {
+    test('GET /notes/:id should return the note with id :id', async () => {
         // create note to fetch later
         const note: CreateNoteDto = {
             title: 'Test Note to Fetch',
@@ -94,7 +94,7 @@ describe('Notes Integration', () => {
             .expect(204)
     })
 
-    it('DELETE /notes/:id should delete the note with id :id', async () => {
+    test('DELETE /notes/:id should delete the note with id :id', async () => {
         // create note to delete
         const note: CreateNoteDto = {
             title: 'Test Note to Delete',
