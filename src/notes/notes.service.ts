@@ -16,4 +16,8 @@ export class NotesService {
     async getNote(id: number): Promise<Note> {
         return this.notesRepository.getNote(id);
     }
+
+    async deleteNote(id: number): Promise<void> {
+        return this.notesRepository.deleteNote(id);
+    }
 }

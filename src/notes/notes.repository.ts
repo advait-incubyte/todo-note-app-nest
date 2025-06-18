@@ -30,4 +30,10 @@ export class NotesRepository {
 
         return note;
     }
+
+    async deleteNote(id: number) {
+        await this.db
+            .delete(notes)
+            .where(eq(notes.id, id));
+    }
 }
