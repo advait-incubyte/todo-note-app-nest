@@ -62,4 +62,19 @@ describe('Notes Service', () => {
     })
     expect(mockedNotesRepo.getNote).toHaveBeenCalledWith(1);
   })
+
+  it('should delete a note by id', async () => {
+    const mockResponseValue = {
+      id: 1,
+      title: 'New Note',
+      content: 'Contents of the new note',
+      createdAt: new Date(),
+      updatedAt: new Date()
+    }
+    mockedNotesRepo.deleteNote.mockResolvedValue(mockResponseValue);
+
+    const response = await service.deleteNote(1);
+    expect(response).toBe(204);
+    expect(mockedNotesRepo.deleteNote).toHaveBeenCalledWith(1);
+  })
 });
