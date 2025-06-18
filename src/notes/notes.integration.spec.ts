@@ -93,4 +93,29 @@ describe('Notes Integration', () => {
         //     .delete(`/notes/${id}`)
         //     .expect(204)
     })
+
+    it('DELETE /notes/:id should delete the note with id :id', async () => {
+        // create note to delete
+        const note: CreateNoteDto = {
+            title: 'Test Note to Delete',
+            content: 'This is a test note to delete'
+        }
+        const createResponse = await request(app.getHttpServer())
+            .post('/notes')
+            .send(note)
+            .expect(201)
+
+        // delete note
+        const { id } = createResponse.body;
+        await request(app.getHttpServer())
+            .delete(`/notes/${id}`)
+            .expect(204)
+
+        // assert note is deleted
+        // const getResponse = await request(app.getHttpServer())
+        //     .get(`/notes/${id}`)
+        //     .expect(404)
+
+        // expect(getResponse.body).toBeNull();
+    })
 })
