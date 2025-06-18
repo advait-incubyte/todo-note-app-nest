@@ -52,17 +52,45 @@ describe('Notes Integration', () => {
         // toMatchObject does partial matching
         expect(response.body).toMatchObject<CreateNoteDto>(note);
 
-        // check persistence
-        const { id } = response.body;
-        const getResponse = await request(app.getHttpServer())
+        // // check persistence
+        // const { id } = response.body;
+        // const getResponse = await request(app.getHttpServer())
+        //     .get(`/notes/${id}`)
+        //     .expect(200)
+
+        // expect(getResponse.body).toMatchObject<CreateNoteDto>(note);
+
+        // // remove test data
+        // await request(app.getHttpServer())
+        //     .delete(`/notes/${id}`)
+        //     .expect(204)
+    })
+
+    it('GET /notes/:id should return the note with id :id', async () => {
+        // create note to fetch later
+        const note: CreateNoteDto = {
+            title: 'Test Note',
+            content: 'This is a test note'
+        }
+        const createResponse = await request(app.getHttpServer())
+            .post('/notes')
+            .send(note)
+            .expect(201)
+
+        // fetch note with the id from the create response
+        const { id } = createResponse.body;
+        const response = await request(app.getHttpServer())
             .get(`/notes/${id}`)
             .expect(200)
 
-        expect(getResponse.body).toMatchObject<CreateNoteDto>(note);
+        // assert the note with the same id is returned
+        const { body } = response;
+        expect(body).toMatchObject<CreateNoteDto>(note);
+        expect(body.id).toBe(id);
 
         // remove test data
-        await request(app.getHttpServer())
-            .delete(`/notes/${id}`)
-            .expect(204)
+        // await request(app.getHttpServer())
+        //     .delete(`/notes/${id}`)
+        //     .expect(204)
     })
 })
