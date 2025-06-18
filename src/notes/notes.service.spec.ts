@@ -27,8 +27,13 @@ describe('Notes Service', () => {
       content: 'Contents of the new note'
     }
 
-    mockedNotesRepo.createNote.mockResolvedValue(dto);
+    mockedNotesRepo.createNote.mockResolvedValue({
+      ...dto,
+      id: 1,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    });
     const response = await service.createNote(dto);
-    expect(response).toEqual(dto)
+    expect(response).toMatchObject(dto)
   })
 });
