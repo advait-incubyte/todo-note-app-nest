@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateNoteDto } from './dto/create-note.dto';
 import { NotesRepository } from './notes.repository';
 import { notes as noteSchema } from './schema';
@@ -14,7 +14,13 @@ export class NotesService {
     }
 
     async getNote(id: number): Promise<Note> {
-        return this.notesRepository.getNote(id);
+        const note = await this.notesRepository.getNote(id);
+
+        if (!note) {
+            throw new NotFoundException(`Note with id ${id} not found`);
+        }
+
+        return note;
     }
 
     async deleteNote(id: number): Promise<void> {
