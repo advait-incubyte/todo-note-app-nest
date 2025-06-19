@@ -1,5 +1,4 @@
 import { mock, MockProxy, mockReset } from 'vitest-mock-extended';
-import { HttpStatus } from '@nestjs/common';
 
 import { NotesService } from './notes.service';
 import { CreateNoteDto } from './dto/create-note.dto';
@@ -30,15 +29,16 @@ describe('Notes Service', () => {
       title: 'New Note',
       content: 'Contents of the new note'
     }
-    mockedNotesRepo.createNote.mockResolvedValue({
+    const mockResponseValue: Note = {
       ...dto,
       id: 1,
       createdAt: new Date(),
       updatedAt: new Date()
-    });
+    }
+    mockedNotesRepo.createNote.mockResolvedValue(mockResponseValue);
 
     const response: Note = await service.createNote(dto);
-    expect(response).toMatchObject(dto)
+    expect(response).toEqual(mockResponseValue);
   })
 
   it('should get all notes', async () => {
@@ -84,7 +84,7 @@ describe('Notes Service', () => {
     const response = await service.getNote(1);
 
     expect(response.id).toBe(1);
-    expect(response).toMatchObject<Note>({
+    expect(response).toEqual<Note>({
       id: mockResponseValue.id,
       title: mockResponseValue.title,
       content: mockResponseValue.content,
