@@ -5,7 +5,7 @@ const config: Config = {
     out: './drizzle',
     dialect: 'postgresql',
     dbCredentials: {
-        url: process.env.TEST_DATABASE_URL,
+        url: process.env.TEST_DATABASE_URL!,
     }
 }
 export default defineConfig(config);

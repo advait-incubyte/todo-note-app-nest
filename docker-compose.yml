@@ -4,15 +4,17 @@ services:
     ports:
       - 5432:5432
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: example
-      POSTGRES_DB: nest-drizzle
+      POSTGRES_USER: nestuser
+      POSTGRES_PASSWORD: nestpassword
+      POSTGRES_DB: nest-drizzle-prod
+    volumes:
+      # this creates a persistent volume to store database data
+      # if docker is stopped/restarted, the data is not lost
+      - db_data:/var/lib/postgresql/data 
+      # Mount a local directory into the container's init folder.
+      # Files in /docker-entrypoint-initdb.d run on first startup.
+      - ./init-db-scripts:/docker-entrypoint-initdb.d
 
-  postgres-test:
-    image: postgres:16
-    ports:
-      - 5433:5432
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: example
-      POSTGRES_DB: nest-drizzle-test
+# Define the named volume for persistent data storage
+volumes:
+  db_data:

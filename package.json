@@ -17,7 +17,11 @@
     "test:watch": "vitest --watch",
     "test:cov": "vitest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/vitest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "db:generate-test": "npx drizzle-kit generate --config=drizzle-test.config.ts",
+    "db:generate-prod": "npx drizzle-kit generate --config=drizzle-prod.config.ts",
+    "db:migrate-test": "npx drizzle-kit migrate --config=drizzle-test.config.ts",
+    "db:migrate-prod": "npx drizzle-kit migrate --config=drizzle-prod.config.ts"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",
