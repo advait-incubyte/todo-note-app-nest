@@ -1,16 +1,19 @@
 import { INestApplication } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
 import { Test } from "@nestjs/testing";
 import request from "supertest";
-import { drizzle } from "drizzle-orm/node-postgres";
-import { ConfigService } from "@nestjs/config";
+import { drizzle, NodePgDatabase } from "drizzle-orm/node-postgres";
+import { eq } from "drizzle-orm";
 
 import { AppModule } from "../app.module";
 import { DATABASE_CONNECTION } from "../drizzle/constants";
-import { schema } from "../drizzle/globalSchema";
+import * as schema from "./schema";
 import { CreateNoteDto } from "./dto/create-note.dto";
 
 describe('Notes Integration', () => {
     let app: INestApplication;
+    let db: NodePgDatabase<typeof schema>;
+    let { notes } = schema;
 
     beforeAll(async () => {
         const module = await Test.createTestingModule({
@@ -19,8 +22,9 @@ describe('Notes Integration', () => {
         .overrideProvider(DATABASE_CONNECTION)
         .useFactory({
             factory: (configService: ConfigService) => {
-                const db = drizzle(configService.getOrThrow('TEST_DATABASE_URL'), { schema })
-                return db;
+                const drizzleClient = drizzle(configService.getOrThrow('TEST_DATABASE_URL'), { schema })
+                db = drizzleClient;
+                return drizzleClient;
             },
             inject: [ConfigService]
         })
@@ -39,6 +43,7 @@ describe('Notes Integration', () => {
     })
 
     test('POST /notes should create a new note and return 201', async () => {
+        // Create a note
         const note: CreateNoteDto = {
             title: 'Test Note Created',
             content: 'This is a test note created by integration test'
@@ -49,25 +54,20 @@ describe('Notes Integration', () => {
             .send(note)
             .expect(201)
 
-        // toMatchObject does partial matching
+        // Assert that the note is created
         expect(response.body).toMatchObject<CreateNoteDto>(note);
 
-        // check persistence
+        // Assert that the note persisted
         const { id } = response.body;
-        const getResponse = await request(app.getHttpServer())
-            .get(`/notes/${id}`)
-            .expect(200)
-
-        expect(getResponse.body).toMatchObject<CreateNoteDto>(note);
+        const [noteFromDb] = await db.select().from(notes).where(eq(notes.id, id));
+        expect(noteFromDb).toMatchObject<CreateNoteDto>(note);
 
         // remove test data
-        await request(app.getHttpServer())
-            .delete(`/notes/${id}`)
-            .expect(204)
+        await db.delete(notes).where(eq(notes.id, id));
     })
 
     test('GET /notes should return all notes', async () => {
-        const notes: CreateNoteDto[] = [
+        const notesToCreate: CreateNoteDto[] = [
             {
                 title: '/GET Note 1',
                 content: 'This is a test note 1'
@@ -82,34 +82,23 @@ describe('Notes Integration', () => {
             }
         ]
 
-        let ids: number[] = [];
-        for (const note of notes) {
-            const response = await request(app.getHttpServer())
-                .post('/notes')
-                .send(note)
-                .expect(201)
-
-            ids.push(response.body.id);
-        }
+        const notesFromDb = await db.insert(notes).values(notesToCreate).returning();
+        const ids: number[] = notesFromDb.map(note => note.id);
 
         // fetch all notes
         const response = await request(app.getHttpServer())
             .get('/notes')
             .expect(200)
 
-        expect(response.body).toBeDefined();
-        expect(response.body.length).toBe(notes.length);
-
-        for (const note of response.body) {
+        const { body } = response;
+        expect(body.length).toBe(notesFromDb.length);
+        for (const note of body) {
             expect(ids).toContain(note.id);
         }
 
         // remove test data
-        for (const id of ids) {
-            await request(app.getHttpServer())
-                .delete(`/notes/${id}`)
-                .expect(204)
-        }
+        for (const id of ids)
+            await db.delete(notes).where(eq(notes.id, id));
     })
 
     test('GET /notes/:id should return the note with id :id', async () => {
@@ -118,26 +107,26 @@ describe('Notes Integration', () => {
             title: 'Test Note to Fetch',
             content: 'This is a test note to check fetch integration test'
         }
-        const createResponse = await request(app.getHttpServer())
-            .post('/notes')
-            .send(note)
-            .expect(201)
+        const [noteFromDb] = await db.insert(notes).values(note).returning();
 
         // fetch note with the id from the create response
-        const { id } = createResponse.body;
+        const { id } = noteFromDb;
         const response = await request(app.getHttpServer())
-            .get(`/notes/${id}`)
+            .get(`/notes/${noteFromDb.id}`)
             .expect(200)
 
         // assert the note with the same id is returned
         const { body } = response;
-        expect(body).toMatchObject<CreateNoteDto>(note);
-        expect(body.id).toBe(id);
+        expect(body).toEqual(expect.objectContaining({
+            id: noteFromDb.id,
+            title: noteFromDb.title,
+            content: noteFromDb.content,
+            createdAt: noteFromDb.createdAt.toISOString(),
+            updatedAt: noteFromDb.updatedAt.toISOString()
+        }));
 
         // remove test data
-        await request(app.getHttpServer())
-            .delete(`/notes/${id}`)
-            .expect(204)
+        await db.delete(notes).where(eq(notes.id, id));
     })
 
     test('DELETE /notes/:id should delete the note with id :id', async () => {
@@ -146,26 +135,16 @@ describe('Notes Integration', () => {
             title: 'Test Note to Delete',
             content: 'This is a test note to be deleted by integration test'
         }
-        const createResponse = await request(app.getHttpServer())
-            .post('/notes')
-            .send(note)
-            .expect(201)
+        const [noteFromDb] = await db.insert(notes).values(note).returning();
 
         // delete note
-        const { id } = createResponse.body;
+        const { id } = noteFromDb;
         await request(app.getHttpServer())
             .delete(`/notes/${id}`)
             .expect(204)
 
         // assert note is deleted
-        const getResponse = await request(app.getHttpServer())
-            .get(`/notes/${id}`)
-            .expect(404)
-
-        expect(getResponse.body).toMatchObject({
-            error: 'Not Found',
-            message: `Note with id ${id} not found`,
-            statusCode: 404
-        });
+        const [deletedNote] = await db.select().from(notes).where(eq(notes.id, id));
+        expect(deletedNote).toBeUndefined();
     })
 })
