@@ -147,4 +147,37 @@ describe('Notes Integration', () => {
         const [deletedNote] = await db.select().from(notes).where(eq(notes.id, id));
         expect(deletedNote).toBeUndefined();
     })
+
+    test('PUT /notes/:id should update the note with id :id', async () => {
+        // create note to update
+        const note: CreateNoteDto = {
+            title: 'Test Note to Update',
+            content: 'This is a test note to be updated by integration test'
+        }
+        const [noteFromDb] = await db.insert(notes).values(note).returning();
+
+        // update note
+        const updatedNote: CreateNoteDto = {
+            title: 'Updated Test Note',
+            content: 'This is a test note to be updated by integration test'
+        }
+        const { id } = noteFromDb;
+        const response = await request(app.getHttpServer())
+            .put(`/notes/${id}`)
+            .send(updatedNote)
+            .expect(200)
+
+        // assert note is updated
+        const { body } = response;
+        expect(body).toEqual(expect.objectContaining({
+            id: noteFromDb.id,
+            title: updatedNote.title,
+            content: updatedNote.content,
+            createdAt: noteFromDb.createdAt.toISOString(),
+            updatedAt: expect.any(String).not.toBe(noteFromDb.updatedAt.toISOString())
+        }));
+
+        // remove test data
+        await db.delete(notes).where(eq(notes.id, id));
+    })
 })
