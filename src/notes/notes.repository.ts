@@ -4,6 +4,7 @@ import * as schema from "./schema";
 import { DATABASE_CONNECTION } from "../drizzle/constants";
 import { NodePgDatabase } from "drizzle-orm/node-postgres";
 import { eq } from "drizzle-orm";
+import { UpdateNoteDto } from "./dto/update-note.dto";
 
 export const NOTES_REPOSITORY = 'NotesRepository';
 
@@ -41,5 +42,15 @@ export class NotesRepository {
         await this.db
             .delete(notes)
             .where(eq(notes.id, id));
+    }
+
+    async updateNote(id: number, data: UpdateNoteDto) {
+        const [note] = await this.db
+            .update(notes)
+            .set(data)
+            .where(eq(notes.id, id))
+            .returning();
+
+        return note;
     }
 }

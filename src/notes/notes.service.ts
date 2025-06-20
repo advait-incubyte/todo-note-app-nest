@@ -2,6 +2,7 @@ import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateNoteDto } from './dto/create-note.dto';
 import { NotesRepository } from './notes.repository';
 import { notes as noteSchema } from './schema';
+import { UpdateNoteDto } from './dto/update-note.dto';
 
 type Note = typeof noteSchema.$inferSelect;
 
@@ -25,6 +26,10 @@ export class NotesService {
         }
 
         return note;
+    }
+
+    async updateNote(id: number, data: UpdateNoteDto): Promise<Note> {
+        return this.notesRepository.updateNote(id, data);
     }
 
     async deleteNote(id: number): Promise<void> {
