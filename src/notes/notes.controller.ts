@@ -25,7 +25,7 @@ export class NotesController {
 
     @Put(':id')
     updateNote(@Param('id') id: number, @Body() updateNoteDto: UpdateNoteDto) {
-        return { title: 'updated' }
+        return this.notesService.updateNote(id, updateNoteDto);
     }
 
     @Delete(':id')
