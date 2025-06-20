@@ -47,7 +47,7 @@ export class NotesRepository {
     async updateNote(id: number, data: UpdateNoteDto) {
         const [note] = await this.db
             .update(notes)
-            .set(data)
+            .set({ ...data, updatedAt: new Date() })
             .where(eq(notes.id, id))
             .returning();
 
