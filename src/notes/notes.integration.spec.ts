@@ -174,13 +174,13 @@ describe('Notes Integration', () => {
 
         // assert note is updated
         const { body } = response;
-        // expect(body).toEqual(expect.objectContaining({
-        //     id: noteFromDb.id,
-        //     title: updatedNote.title,
-        //     content: updatedNote.content,
-        //     createdAt: noteFromDb.createdAt.toISOString(),
-        //     updatedAt: expect.not.stringMatching(noteFromDb.updatedAt.toISOString())
-        // }));
+        expect(body).toEqual(expect.objectContaining({
+            id: noteFromDb.id,
+            title: updatedNote.title,
+            content: updatedNote.content,
+            createdAt: noteFromDb.createdAt.toISOString(),
+            updatedAt: expect.not.stringMatching(noteFromDb.updatedAt.toISOString())
+        }));
 
         // remove test data
         await db.delete(notes).where(eq(notes.id, id));
