@@ -96,20 +96,18 @@ describe('Notes Service', () => {
   })
 
   it('should update a note by id', async () => {
-    const mockResponseValue: Note = {
-      id: 1,
-      title: 'New Note',
-      content: 'Contents of the new note',
-      createdAt: new Date(),
-      updatedAt: new Date()
-    }
-    mockedNotesRepo.updateNote.mockResolvedValue(mockResponseValue);
-
     const id = 1;
     const dto: UpdateNoteDto = {
       title: 'Updated Note',
       content: 'Contents of the updated note'
     }
+    const mockResponseValue: Note = {
+      id,
+      ...dto,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    }
+    mockedNotesRepo.updateNote.mockResolvedValue(mockResponseValue);
     const response = await service.updateNote(id, dto);
     expect(response).toEqual<Note>({
       ...mockResponseValue,
