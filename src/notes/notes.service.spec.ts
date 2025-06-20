@@ -4,6 +4,7 @@ import { NotesService } from './notes.service';
 import { CreateNoteDto } from './dto/create-note.dto';
 import { NotesRepository } from './notes.repository';
 import { notes as noteSchema } from './schema';
+import { UpdateNoteDto } from './dto/update-note.dto';
 
 type Note = typeof noteSchema.$inferSelect;
 
@@ -92,6 +93,29 @@ describe('Notes Service', () => {
       updatedAt: mockResponseValue.updatedAt
     })
     expect(mockedNotesRepo.getNote).toHaveBeenCalledWith(1);
+  })
+
+  it('should update a note by id', async () => {
+    const mockResponseValue: Note = {
+      id: 1,
+      title: 'New Note',
+      content: 'Contents of the new note',
+      createdAt: new Date(),
+      updatedAt: new Date()
+    }
+    mockedNotesRepo.updateNote.mockResolvedValue(mockResponseValue);
+
+    const id = 1;
+    const dto: UpdateNoteDto = {
+      title: 'Updated Note',
+      content: 'Contents of the updated note'
+    }
+    const response = await service.updateNote(id, dto);
+    expect(response).toEqual<Note>({
+      ...mockResponseValue,
+      ...dto
+    })
+    expect(mockedNotesRepo.updateNote).toHaveBeenCalledWith(id, dto);
   })
 
   it('should delete a note by id', async () => {
